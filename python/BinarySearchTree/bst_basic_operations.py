@@ -48,10 +48,37 @@ class BST:
             return True
 
     def delete(self, data):
-        pass
+        if self.root:
+            self.root = self._delete(data, self.root)
 
-    def _delete(self, data):
-        pass
+    def _delete(self, data, curr_node: Node):
+        # If the key to be deleted is smaller than the root's key then it lies in  left subtree
+        if data < curr_node.key:
+            curr_node.left = self._delete(data, curr_node.left)
+
+        # If the kye to be delete is greater than the root's key then it lies in right subtree
+        elif data > curr_node.key:
+            curr_node.right = self._delete(data, curr_node.right)
+
+        # If key is same as root's key, then this is the node to be deleted
+        else:
+            # Node with only one child or no child
+            if curr_node.left is None:
+                return curr_node.right
+            elif curr_node.right is None:
+                return curr_node.left
+            else:
+                # inorder sucessor of the tree
+                succ_node = self.find_min(curr_node.right)
+                curr_node.key = succ_node.key
+                curr_node.right = self._delete(succ_node.key, curr_node.right)
+        return curr_node
+
+    def find_min(self, curr_node: Node):
+        if curr_node:
+            while curr_node.left is not None:
+                curr_node = curr_node.left
+        return curr_node
 
     def print_tree(self, traversal_type):
         if traversal_type == 'preorder':
@@ -101,6 +128,7 @@ if __name__ == '__main__':
     print(bst.find(1))
     print(bst.print_tree("preorder"))
     print(bst.print_tree("postorder"))
+    bst.delete(2)
     print(bst.print_tree("inorder"))
 
 
