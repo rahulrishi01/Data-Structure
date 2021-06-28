@@ -31,11 +31,11 @@ class BST:
 
     def find(self, data):
         if self.root:
-            is_found = self._find(data, self.root)
-            if is_found:
-                return True
+            node = self._find(data, self.root)
+            if node:
+                return node
             else:
-                return False
+                return None
         else:
             return None
 
@@ -45,7 +45,7 @@ class BST:
         elif data > curr_node.key and curr_node.right:
             return self._find(data, curr_node.right)
         if data == curr_node.key:
-            return True
+            return curr_node
 
     def delete(self, data):
         if self.root:
@@ -111,25 +111,167 @@ class BST:
             traversal = self._inorder_traversal(start.right, traversal)
         return traversal
 
+    def _levelorder_traversal(self, start: Node, traversal):
+        pass
+
+    #   longest path from the root node to a leaf node
+    def bst_height(self):
+        if self.root is None:
+            return 0
+        else:
+            return self._bst_height(self.root)
+
+    def _bst_height(self, curr_node):
+        if curr_node is None:
+            return 0
+        else:
+            return 1 + max(self._bst_height(curr_node.left), self._bst_height(curr_node.right))
+
+    # The size of a binary tree is the total number of nodes in that tree.
+    def bst_size(self):
+        if self.root is None:
+            return 0
+        else:
+            return self._bst_size(self.root)
+
+    def _bst_size(self, curr_node: Node):
+        if curr_node is None:
+            return 0
+        else:
+            return 1 + self._bst_size(curr_node.left) + self._bst_size(curr_node.right)
+
+    # The depth of a node is the number of edges from the node to the tree's root node.
+    def node_depth(self, data):
+        pass
+
+    def k_th_smallest(self, k):
+        if k is None or self.root is None:
+            return None
+        else:
+            min_val, k = self._k_th_smallest(self.root, None, k)
+            if k != 1:
+                print("Not Found")
+            else:
+                print("Minimum value {}".format(min_val))
+
+    def _k_th_smallest(self, start, data, k):
+        if start:
+            data, k = self._k_th_smallest(start.left, data, k)
+            if k == 1:
+                if data is None:
+                    data = start.key
+                return data, k
+            else:
+                k = k - 1
+            data, k = self._k_th_smallest(start.right, data, k)
+        return data, k
+
+    def kthSmallest(self, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+
+        def inorder(r: Node):
+            return inorder(r.left) + [r.key] + inorder(r.right) if r else []
+
+        return inorder(self.root)[k - 1]
+
+    def kthSmallest_itr(self, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        stack = []
+        current = self.root
+
+        while True:
+            while current:
+                stack.append(current)
+                current = current.left
+            current = stack.pop()
+            k -= 1
+            if not k:
+                return current.key
+            current = current.right
+
+    def kthLargest_itr(self, k):
+        """
+        :type root: TreeNode
+        :type k: int
+        :rtype: int
+        """
+        stack = []
+        current = self.root
+
+        while True:
+            while current:
+                stack.append(current)
+                current = current.right
+            current = stack.pop()
+            k -= 1
+            if not k:
+                return current.key
+            current = current.left
+
+    def inorder_successor(self, p: Node):
+        root = self.root
+        successor = None
+
+        while root != None and root.key != p.key:
+            if root.key > p.key:
+                successor = root
+                root = root.left
+            else:
+                root = root.right
+
+        if root == None:
+            return None
+
+        if root.right == None:
+            return successor
+
+        root = root.right
+        while root.left != None:
+            root = root.left
+        return root
+
+    def inorder_predecessor(self):
+        pass
+
 
 if __name__ == '__main__':
     bst = BST()
-    bst.insert(7)
+    bst.insert(20)
+    bst.insert(8)
+    bst.insert(22)
     bst.insert(4)
     bst.insert(12)
-    bst.insert(6)
     bst.insert(10)
-    bst.insert(3)
-    bst.insert(8)
-    bst.insert(5)
-    bst.insert(2)
-    bst.insert(9)
-    print(bst.find(4))
-    print(bst.find(1))
+    bst.insert(14)
+    # bst.insert(5)
+    # bst.insert(2)
+    # bst.insert(9)
+    # print(bst.find(4))
+    # print(bst.find(1))
     print(bst.print_tree("preorder"))
     print(bst.print_tree("postorder"))
-    bst.delete(2)
+    # bst.delete(2)
     print(bst.print_tree("inorder"))
+    # print(bst.kthSmallest(3))
+    # print(bst.kthLargest_itr(8))
+    # print(bst.kthSmallest_itr(3))
+    node = bst.find(8)
+    req_node = bst.inorder_successor(node)
+    if req_node:
+        print(req_node.key)
+    else:
+        print("None")
+    # bst.k_th_smallest(5)
+    print("Size of Binary search tree is: {}".format(bst.bst_size()))
+    print("Height of Binary search tree is: {}".format(bst.bst_height()))
 
 
 
